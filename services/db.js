@@ -9,7 +9,6 @@ const tuser=mongoose.model("tuser",
     email:String,
     password: String, 
     data:[]
-   
 })
 
 

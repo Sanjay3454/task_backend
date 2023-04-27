@@ -1,5 +1,6 @@
 const db = require('./db')
 const jwt = require("jsonwebtoken")
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -71,10 +72,12 @@ register = (uname, email, psw) => {
 
     return  db.tuser.findOne({email}).then(user=>{
       if (user) {
+        const id = uuidv4();
 
         user.data.push({   date: date,
           taskName: taskName,
           taskData: taskData,
+          id:id
           })
             user.save()
 
@@ -161,56 +164,76 @@ register = (uname, email, psw) => {
  
 
 
+   deleteTas = (taskId) => {
+    return db.tuser.updateOne(
+      { "data.id": taskId },
+      { $pull: { data: { id: taskId } } }
+    ).then((result) => {
+      if (result) {
+        return {
+          status: true,
+          message: "deleted",
+          statusCode: 200,
+        };
+      } else {
+        return {
+          status: false,
+          message: "error",
+          statusCode: 404,
+        };
+      }
+    });
+  };
 
 
 
 
 
 
+ 
 
 
 
-
-
-  //  editTask = (date, taskName,taskData,email)=>{
+  editTask = (date, taskName, taskData, email, Taskid) => {
+    console.log("aman",date);
+    return db.tuser.findOneAndUpdate(
+      { "data.id": Taskid },
+      { 
+        "data.$.date": date,
+        "data.$.taskName": taskName,
+        "data.$.taskData": taskData 
+      },
+     
+    )
     
-    
-
-  //   return  db.tuser.updateOne(
-  //     {$push: { data: { date, taskName, taskData } } } ) .then(user=>{
-  //     if (user) {
-
-  //       // user.data.push({date: date,
-  //       //   taskName: taskName,
-  //       //   taskData: taskData,
-  //       //   })
-           
-
-  //         return {
-  //           status: true,
-  //           message: `stored`,
-  //           statusCode: 200,
-          
-  //         }
-
-  //    }
-  //    else {
-  //      return {
-  //        status: false,
-  //        message: "error",
-  //        statusCode: 404
-  //      }
-  //    }
-
-  //   })
-    
-  //  }
-
-
-
-
-
-
+    .then(user => {
+      console.log("man",user);
+      if (user) {
+      
+        return {
+          status: true,
+          message: "Task updated successfully",
+          statusCode: 200,
+          user
+        };
+      } else {
+        return {
+          status: false,
+          message: "Task not found",
+          statusCode: 404
+        };
+      }
+    })
+    .catch(err => {
+      return {
+        status: false,
+        message: "Error updating task",
+        statusCode: 500,
+        err
+      };
+    });
+  };
+  
   
   
 
@@ -221,6 +244,7 @@ register = (uname, email, psw) => {
     login,
     tasks,
     getTask,
-    deleteTask
-    // editTask
+    deleteTask,
+    deleteTas,
+    editTask
   }

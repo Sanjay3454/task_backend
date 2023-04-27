@@ -99,14 +99,25 @@ app.post("/delete", (req, res) => {
 
 
 
-// app.post("/editTasks", (req, res) => {
+app.post("/deleteTask", (req, res) => {
     
-//     ds.editTask(req.body.date,req.body.taskName,req.body.taskData,req.body.email).then(result => {
-//         res.status(result.statusCode).json(result)
+    ds.deleteTas(req.body.Taskid).then(result => {
+        res.status(result.statusCode).json(result)
        
-//     })
+    })
 
-// })
+})
+
+
+
+app.post("/editTasks", (req, res) => {
+    
+    ds.editTask(req.body.date,req.body.taskName,req.body.taskData,req.body.email,req.body.Taskid).then(result => {
+        res.status(result.statusCode).json(result)
+       
+    })
+
+})
 
 
 
